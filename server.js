@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const colors = require("colors");
+const http = require("http");
 // const DBConnect = require("./utils/dbConnect");
 
 const app = require("./app");
@@ -11,10 +12,12 @@ mongoose.connect(process.env.DATABASE_LOCAL).then(() => {
   console.log("Database connection is successfully established");
 });
 
+const server = http.createServer(app);
+
 // server
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`App is running on port ${port}`.blue.bold);
 });
 
