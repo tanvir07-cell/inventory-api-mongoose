@@ -4,14 +4,44 @@ module.exports.getProducts = async (req, res, next) => {
   try {
     const { status } = req.query;
 
-    const filters = { ...req.query };
+    let filters = { ...req.query };
 
     // now i am excluding the query paramter(limit,page,sort) only taking status query
     // that means ami only status query diye data anbo:
-    const excludeFields = ["sort", "page", "limit"];
+    const excludeFields = ["sort", "page", "limit", "fields"];
     excludeFields.forEach((fields) => delete filters[fields]);
 
-    const products = await Product.find(filters).sort({ price: 1 });
+    // ekhon ei filters jate (price/quantity >= )er jonneo kaaj kore:
+    //gt lt gte lte
+
+    let filterString = JSON.stringify(filters);
+    filterString = filterString.replace(
+      /\b(gt|gte|lt|lte)\b/g,
+      (match) => `$${match}`
+    );
+    filters = JSON.parse(filterString);
+
+    // ami chaitesi route er moddei query kore user data sort ba aro kaaj korte parbe:
+    const queries = {};
+
+    // for sorting query:
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      queries.sortBy = sortBy;
+    }
+
+    // select query/projection query(that means amra jei jei property er data gula dekhte chai shudu sei sei data gulay dekhte pabo)
+
+    if (req.query.fields) {
+      const fieldsBy = req.query.fields.split(",").join(" ");
+      queries.fieldsBy = fieldsBy;
+      console.log(queries);
+    }
+
+    const products = await Product.find(filters)
+      .select(queries.fieldsBy)
+      .sort(queries.sortBy)
+      .limit(+req.query.limit);
 
     if (products.length > 0) {
       return res.status(200).json({
