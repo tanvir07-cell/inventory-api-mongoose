@@ -2,7 +2,16 @@ const Product = require("../model/Product");
 
 module.exports.getProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({});
+    const { status } = req.query;
+
+    const filters = { ...req.query };
+
+    // now i am excluding the query paramter(limit,page,sort) only taking status query
+    // that means ami only status query diye data anbo:
+    const excludeFields = ["sort", "page", "limit"];
+    excludeFields.forEach((fields) => delete filters[fields]);
+
+    const products = await Product.find(filters).sort({ price: 1 });
 
     if (products.length > 0) {
       return res.status(200).json({
@@ -108,6 +117,45 @@ module.exports.updateBulkProduct = async (req, res, next) => {
     return res
       .status(200)
       .json({ status: true, message: "Successfully updated the products" });
+  } catch (err) {
+    return res.status(400).json({ status: false, message: err.message });
+  }
+};
+
+module.exports.deleteProductById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.deleteOne(
+      { _id: id },
+      { runValidators: true }
+    );
+
+    if (product.deletedCount === 0) {
+      return res
+        .status(400)
+        .json({ status: false, message: "couldn't delete the products" });
+    }
+    return res
+      .status(203)
+      .json({ status: true, message: "successfully deleted the product" });
+  } catch (err) {
+    return res.status(400).json({ status: false, message: err.message });
+  }
+};
+
+module.exports.deleteBulkProduct = async (req, res, next) => {
+  try {
+    const { ids } = req.body;
+    const products = await Product.deleteMany({ _id: ids });
+
+    if (products.deletedCount === 0) {
+      return res
+        .status(400)
+        .json({ status: false, message: "couldn't delete the products" });
+    }
+    return res
+      .status(203)
+      .json({ status: true, message: "successfully deleted the products" });
   } catch (err) {
     return res.status(400).json({ status: false, message: err.message });
   }
