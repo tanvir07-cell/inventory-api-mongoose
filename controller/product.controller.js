@@ -38,14 +38,28 @@ module.exports.getProducts = async (req, res, next) => {
       console.log(queries);
     }
 
+    // for pagination:
+    // user jodi route er moddeh query hishebe page pass kore:
+    if (req.query.page) {
+      // By deafult pages value 1 and limit's value 10
+      let { page = 1, limit = 5 } = req.query;
+
+      const skip = (page - 1) * parseInt(limit);
+      queries.skip = skip;
+      queries.limit = parseInt(limit);
+      console.log(queries);
+    }
+
     const products = await Product.find(filters)
+      .skip(queries.skip)
+      .limit(queries.limit)
       .select(queries.fieldsBy)
-      .sort(queries.sortBy)
-      .limit(+req.query.limit);
+      .sort(queries.sortBy);
 
     if (products.length > 0) {
       return res.status(200).json({
         message: "Get all products",
+        length: products.length,
         products: products,
       });
     }
