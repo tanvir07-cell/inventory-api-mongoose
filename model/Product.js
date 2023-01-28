@@ -1,5 +1,7 @@
 // product schema:
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Schema.Types;
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -9,66 +11,61 @@ const productSchema = new mongoose.Schema(
       unique: [true, "name must be unique"],
       minLength: [3, "name must be at least 3 characters"],
       maxLength: [100, "name is too large"],
+      lowercase: true,
     },
     description: {
       type: String,
       required: true,
     },
-    price: {
-      type: Number,
-      required: true,
-      min: [0, "price can't be negative"],
-    },
+
     unit: {
       type: String,
       required: true,
       enum: {
-        values: ["kg", "litre", "pcs"],
-        message: "unit value can't be {VALUE}, must be kg/litre/pcs",
+        values: ["kg", "litre", "pcs", "bag"],
+        message: "unit value can't be {VALUE}, must be kg/litre/pcs/bag",
       },
     },
-    quantity: {
-      type: Number,
-      required: true,
-      min: [0, "quantity can't be negative"],
-      validate: {
-        validator: (value) => {
-          const isInteger = Number.isInteger(value);
+    imageURLS: [
+      {
+        type: String,
+        required: true,
+        validate: {
+          validator: (value) => {
+            // check imageUrl's are array or not:
+            if (!Array.isArray(value)) {
+              return false;
+            }
+            let isValid = true;
+            value.forEach((url) => {
+              // check if the url is valid or not:
+              if (!validator.isURL(url)) {
+                isValid = false;
+              }
+            });
+            return isValid;
+          },
 
-          if (isInteger) return true;
-          else return false;
+          message: "Please provide valid image URLS",
         },
-        message: "quantity must be an integer",
       },
-    },
+    ],
 
-    status: {
+    category: {
       type: String,
       required: true,
-      enum: {
-        values: ["in-stock", "out-of-stock", "discontinued"],
-        message:
-          "status can't be {VALUES}, must be in-stock, out-of-stock, discontinued",
+    },
+    brand: {
+      name: {
+        type: String,
+        required: true,
+      },
+      id: {
+        type: ObjectId,
+        ref: "Brand",
+        required: true,
       },
     },
-    // supplier: {
-    //   /**
-    //    * supplier nijeo ekti Schema:
-    //    * tai er reference onno ekti Schema teo pass korte hobe
-    //    */
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Supplier",
-    // },
-
-    // categories: [
-    //   {
-    //     name: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //     _id: mongoose.Schema.Types.ObjectId,
-    //   },
-    // ],
   },
   { timestamps: true }
 );
@@ -83,16 +80,6 @@ productSchema.pre("save", function (next) {
   }
   next();
 });
-
-productSchema.post("save", function (doc, next) {
-  console.log("After saving data");
-  next();
-});
-
-// mongoose logger middleware method:
-productSchema.methods.logger = function () {
-  console.log(`product save for ${this.name}`);
-};
 
 // product model:
 const Product = mongoose.model("Product", productSchema);
