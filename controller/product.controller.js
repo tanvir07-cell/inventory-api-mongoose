@@ -217,3 +217,9 @@ module.exports.deleteBulkProduct = async (req, res, next) => {
     return res.status(400).json({ status: false, message: err.message });
   }
 };
+
+module.exports.fileUpload = async (req, res, next) => {
+  try {
+    res.status(201).json(req.file);
+  } catch (err) {}
+};

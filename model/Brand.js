@@ -15,11 +15,21 @@ const brandSchema = new mongoose.Schema(
     email: {
       type: String,
       lowercase: true,
-      vaildate: [validator.isEmail, "Please provide a valid email address"],
+      validate: {
+        validator: function (v) {
+          return validator.isEmail(v);
+        },
+        message: (props) => `${props.value} is not a valid email!`,
+      },
     },
     website: {
       type: String,
-      validate: [validator.isURL, "Please provide a valid url"],
+      validate: {
+        validator: function (v) {
+          return validator.isURL(v);
+        },
+        message: (props) => `${props.value} is not a valid url!`,
+      },
     },
     location: String,
     //   ekekti brand er under e onekgula products thakbe tai Product model tir reference pass kore dite hobe ei Brand Model er moddeh:
