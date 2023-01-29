@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const productRoute = require("./routes/products.route");
+const brandRoute = require("./routes/brands.route");
 
 // const {
 //   globalErrorHandler,
@@ -13,8 +14,16 @@ const productRoute = require("./routes/products.route");
 app.use(express.json());
 app.use(cors());
 
-// for routes:
+// for product routes:
 app.use("/api/v1/product", productRoute);
+// for brand routes:
+app.use("/api/v1/brand", brandRoute);
+
+// for category routes:
+app.use("/api/v1/category", require("./routes/categories.routes"));
+
+// for store routes:
+app.use("/api/v1/store", require("./routes/stores.routes"));
 
 // for gloabl error handler:
 // app.use(globalErrorStatus);

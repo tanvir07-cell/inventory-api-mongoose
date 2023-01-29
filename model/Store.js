@@ -27,7 +27,7 @@ const storeSchema = new mongoose.Schema(
       type: String,
       validate: [validator.isURL, "please provide a valid image url"],
     },
-    statue: {
+    status: {
       type: String,
       enum: ["active", "inactive"],
       default: "active",
@@ -44,4 +44,6 @@ const storeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = storeSchema;
+const Store = mongoose.model("Store", storeSchema);
+
+module.exports = Store;

@@ -1,4 +1,5 @@
 const Product = require("../model/Product");
+const Brand = require("../model/Brand");
 
 module.exports.getProducts = async (req, res, next) => {
   try {
@@ -78,16 +79,28 @@ module.exports.createProduct = async (req, res, next) => {
   //  mongoose jei model create korlam sei model theke instance create korbo then save korbo
 
   try {
-    const product = new Product(req.body);
-    // if (product.quantity == 0) {
-    //   product.status = "out-of-stock";
-    // }
-    const result = await product.save();
+    // const product = new Product(req.body);
+    // // if (product.quantity == 0) {
+    // //   product.status = "out-of-stock";
+    // // }
+    // const result = await product.save();
+    const product = await Product.create(req.body);
+
+    // ekhon ei product ti create korar por er id ti jabe abar brand Model er products array er moddeh karon ei brand er under e kon kon products ase tar information jabe abar oi brand model er products array er moddeh:
+    const { _id: productId, brand } = product;
+
+    // ekhon ei product id ti push korbo Brand model er products array er moode:
+    const result = await Brand.updateOne(
+      { _id: brand.id },
+      { $push: { products: productId } }
+    );
+
+    console.log(result.nModified);
 
     // calling the logger method:
-    result.logger();
+    // product.logger();
 
-    if (!result) {
+    if (!product) {
       return res
         .status(400)
         .json({ status: false, message: "couldn't save the product" });
