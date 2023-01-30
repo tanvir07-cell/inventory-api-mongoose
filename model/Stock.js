@@ -11,7 +11,7 @@ const stockSchema = new mongoose.Schema(
 
     name: {
       type: String,
-      required: [true, "please provide a name for this product"],
+
       trim: true,
       unique: [true, "name must be unique"],
       minLength: [3, "name must be at least 3 characters"],
@@ -129,6 +129,11 @@ const stockSchema = new mongoose.Schema(
         ref: "Brand",
         required: true,
       },
+    },
+    sellCount: {
+      type: Number,
+      default: 0,
+      min: [0, "sellCount not be a negative number"],
     },
   },
   { timestamps: true }

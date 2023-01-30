@@ -31,7 +31,7 @@ const supplierSchema = new mongoose.Schema(
       id: {
         type: ObjectId,
         required: true,
-        ref: "brand",
+        ref: "Brand",
       },
     },
 
@@ -59,24 +59,14 @@ const supplierSchema = new mongoose.Schema(
       },
     },
 
-    tradeLicenseAddress: {
-      type: String,
-      require: [true, "Please provide a valid trade license address"],
-    },
+    tradeLicenseAddress: String,
+    presentAddress: String,
 
-    presentAddress: {
-      type: String,
-      require: [true, "Please provide a valid trade license address"],
-    },
-
-    permanentAddress: {
-      type: String,
-      require: [true, "Please provide a valid trade license address"],
-    },
+    permanentAddress: String,
 
     location: {
       type: String,
-      required: true,
+
       lowercase: true,
       enum: {
         values: [
@@ -87,6 +77,7 @@ const supplierSchema = new mongoose.Schema(
           "Rajshahi",
           "Rangpur",
           "Mymensingh",
+          "Gazipur",
         ],
         message: "{VALUE} is not a valid store name",
       },
@@ -110,5 +101,7 @@ const supplierSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const Supplier = mongoose.model("Supplier", supplierSchema);
 
 module.exports = Supplier;

@@ -25,6 +25,12 @@ app.use("/api/v1/category", require("./routes/categories.routes"));
 // for store routes:
 app.use("/api/v1/store", require("./routes/stores.routes"));
 
+// for supplier routes:
+app.use("/api/v1/supplier", require("./routes/supplier.route"));
+
+// for stock routes:
+app.use("/api/v1/stock", require("./routes/stock.routes"));
+
 // for gloabl error handler:
 // app.use(globalErrorStatus);
 // app.use(globalErrorHandler);
