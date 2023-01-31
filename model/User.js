@@ -98,7 +98,8 @@ const userSchema = new mongoose.Schema(
 // user er model ti create korar agei amra schema er pre middleware diye password ti ke hash kore nibo. and ei password hash korar jonne amra bcrypt ti use korbo:
 
 userSchema.pre("save", function (next) {
-  const hashedPassword = bcrypt.hashSync(this.password);
+  const saltRounds = 10;
+  const hashedPassword = bcrypt.hashSync(this.password, saltRounds);
   //   ekhon amar user schema er plain password ti ke hash password e save korbo:
   this.password = hashedPassword;
   this.confirmPassword = undefined;

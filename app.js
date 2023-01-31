@@ -31,6 +31,9 @@ app.use("/api/v1/supplier", require("./routes/supplier.route"));
 // for stock routes:
 app.use("/api/v1/stock", require("./routes/stock.routes"));
 
+// for user routes:
+app.use("/api/v1/user", require("./routes/user.routes"));
+
 // for gloabl error handler:
 // app.use(globalErrorStatus);
 // app.use(globalErrorHandler);
